@@ -1,6 +1,6 @@
 # Python specific
 __pycache__/
-*.envss
+*.env
 *.venv
 venv/
 *.log
