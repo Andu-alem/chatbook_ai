@@ -1,0 +1,11 @@
+# Python specific
+__pycache__/
+*.envss
+*.venv
+venv/
+*.log
+
+# IDE specific
+.vscode/
+.idea/ssssss
+*.iml
