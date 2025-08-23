@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from config import settings
 from databases.users import UserRepository
-from databases.projects import ProjectRepository
+from databases.books import BookRepository
 
 COLLECTION_NAMES = ["users", "books", "books_chunk"]
 
@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     books = database.get_collection(COLLECTION_NAMES[1])
 
     app.users = UserRepository(users)
-    app.projects = ProjectRepository(projects)
+    app.books = BookRepository(books)
 
     # Yield back to FastAPI Application:
     yield
