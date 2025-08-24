@@ -66,7 +66,7 @@ async def get_all_books():
 
 @app.post("/books/{book_id}/chat")
 async def ai_chat_interface(book_id: str, chat_query: ChatQuery, current_user: UserModel = Depends(get_current_user)):
-    book_title = await get_book_by_id(id)
+    book_title = await app.books.get_book_by_id(book_id)
     if book_title is None:
         raise HTTPException(status_code=404, detail="No book found")
 
