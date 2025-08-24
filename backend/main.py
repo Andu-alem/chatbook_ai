@@ -1,17 +1,26 @@
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from starlette.middleware.cors import CORSMiddleware
 from models import (
     NewUser, UserModel, UserRegisterResponse, UserLoginResponse, BooksResponseModel, ChatQuery
 )
 from pydantic import BaseModel
 from bson import ObjectId
 from databases.base import lifespan
-from utils.ingestion_db_init import vector_store
+from databases.ingestion_db_init import vector_store
 from utils.jwt_helpers import decode_token
 from utils.query_helper import llm_response
 
 
 app = FastAPI(lifespan=lifespan, docs_url="/docs")
+
+app.add_middleware(
+    middleware_class = CORSMiddleware,
+    allow_origins = ["*"],
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"],
+)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserModel:
