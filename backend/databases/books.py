@@ -2,6 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 from fastapi import HTTPException
 from models import BookModel, BooksResponseModel
 from typing import List
+from bson import ObjectId
 
 class BookRepository:
     def __init__(self, book_collection: AsyncIOMotorCollection):
@@ -23,4 +24,15 @@ class BookRepository:
         return BooksResponseModel(
             books = books
         )
+
+    async def get_book_by_id(self, id: str, session=None):
+        book = await self._book_collection.find_one(
+            { "_id": ObjectId(id) },
+            session=session
+        )
+
+        if book is None:
+            return None
+            
+        return book["title"]
 
