@@ -1,6 +1,6 @@
 from utils.pdf_handler import PdfHandler
 from utils.books_meta import books_data
-from utils.ingestion_db_init import vector_store, books_meta_collection
+from databases.ingestion_db_init import vector_store, books_meta_collection
 from langchain_core.documents import Document
 import time
 from bson import ObjectId
@@ -26,7 +26,7 @@ def store_book_meta(book_data: dict) -> ObjectId:
 
 # Full Workflow
 if __name__ == "__main__":
-    for book_data in books_data[4:5]:
+    for book_data in books_data[7:]:
 
         handler = PdfHandler(book_data)
 
