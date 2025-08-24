@@ -37,7 +37,7 @@ class BookModel(BaseModel):
 
     @staticmethod
     def from_doc(doc):
-        return Book(
+        return BookModel(
             id=str(doc["_id"]),
             title=doc["title"],
             author=doc["author"],
@@ -46,3 +46,6 @@ class BookModel(BaseModel):
 
 class BooksResponseModel(BaseModel):
     books: List[BookModel] = []
+
+class ChatQuery(BaseModel):
+    query: str
