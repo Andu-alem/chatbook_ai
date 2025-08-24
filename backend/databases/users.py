@@ -2,7 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 from fastapi import HTTPException
 from pydantic import BaseModel
 from bson import ObjectId
-from utils import (
+from utils.jwt_helpers import (
     get_password_hash, create_access_token, create_refresh_token, verify_password, decode_token
 )   
 from models import NewUser, UserModel, UserLoginResponse, UserRegisterResponse
