@@ -2,9 +2,6 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from bson import ObjectId
 
-class Token(BaseModel):
-    token: str
-
 class NewUser(BaseModel):
     name: Optional[str] = None
     email: EmailStr
@@ -25,9 +22,13 @@ class UserModel(NewUser):
 class UserRegisterResponse(BaseModel):
     message: str
 
-class UserLoginResponse(BaseModel):
+class Tokens(BaseModel):
     access_token: str
     refresh_token: str
+
+class UserLoginResponse(BaseModel):
+    message: str
+    access_token: str
 
 class BookModel(BaseModel):
     id: str
@@ -49,3 +50,6 @@ class BooksResponseModel(BaseModel):
 
 class ChatQuery(BaseModel):
     query: str
+    
+class RefreshTokenResponse():
+    new_access_token: str
