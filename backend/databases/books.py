@@ -25,7 +25,7 @@ class BookRepository:
             books = books
         )
 
-    async def get_book_by_id(self, id: str, session=None):
+    async def get_book_by_id(self, id: str, session=None) -> BookModel:
         book = await self._book_collection.find_one(
             { "_id": ObjectId(id) },
             session=session
@@ -34,5 +34,5 @@ class BookRepository:
         if book is None:
             return None
             
-        return book["title"]
+        return BookModel.from_doc(book)
 
