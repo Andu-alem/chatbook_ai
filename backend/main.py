@@ -1,15 +1,12 @@
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from starlette.middleware.cors import CORSMiddleware
 from models import (
-    NewUser, UserModel, UserRegisterResponse, UserLoginResponse, BooksResponseModel, ChatQuery
+    NewUser, UserModel, UserRegisterResponse, UserLoginResponse, BooksResponseModel, ChatQuery, BookModel
 )
-from pydantic import BaseModel
-from bson import ObjectId
 from databases.base import lifespan
-from databases.ingestion_db_init import vector_store
 from utils.jwt_helpers import decode_token
-from utils.query_helper import llm_response
+from rag_pipeline_handler import llm_response
 
 
 app = FastAPI(lifespan=lifespan, docs_url="/docs")
@@ -65,24 +62,22 @@ async def get_all_books():
     return await app.books.get_all_books()
 
 @app.post("/books/{book_id}/chat")
-async def ai_chat_interface(book_id: str, chat_query: ChatQuery, current_user: UserModel = Depends(get_current_user)):
-    book_title = await app.books.get_book_by_id(book_id)
-    if book_title is None:
+async def ai_chat_interface(
+    book_id: str, 
+    chat_query: ChatQuery, 
+    current_user: UserModel = Depends(get_current_user)
+) -> str:
+    book: BookModel = await app.books.get_book_by_id(book_id)
+    if book is None:
         raise HTTPException(status_code=404, detail="No book found")
 
-    # Vector Search
-    results = vector_store.similarity_search(
-        chat_query.query, 
-        k=3,
-        pre_filter={ "book_id" : { "$eq": ObjectId(book_id) } }
+    # Call rag pipeline handler with user question and important datas
+    ai_response = llm_response(
+        question=chat_query.query, 
+        user_name=current_user.name,
+        user_id=current_user.id,
+        book_id=book_id,
+        book_title=book.title
     )
-
-    if not results:
-        raise HTTPException(status_code=404, detail="No relevant content found in book.")
-
-    # Merge retrived documents
-    relevant_text = " ".join([res.page_content for res in results])
-    # Call llm on relevant context
-    ai_response = llm_response(relevant_text, chat_query.query, book_title)
 
     return ai_response
