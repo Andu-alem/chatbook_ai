@@ -51,5 +51,5 @@ class BooksResponseModel(BaseModel):
 class ChatQuery(BaseModel):
     query: str
     
-class RefreshTokenResponse():
+class RefreshTokenResponse(BaseModel):
     new_access_token: str
