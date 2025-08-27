@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response, Request
 from fastapi.security import OAuth2PasswordBearer
 from starlette.middleware.cors import CORSMiddleware
 from models import (
-    NewUser, UserModel, UserRegisterResponse, UserLoginResponse, BooksResponseModel, ChatQuery, BookModel
+    NewUser, UserModel, UserRegisterResponse, UserLoginResponse, BooksResponseModel, ChatQuery, BookModel, Tokens, RefreshTokenResponse
 )
 from databases.base import lifespan
 from utils.jwt_helpers import decode_token
@@ -42,19 +42,45 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserModel:
 
 @app.get("/")
 def read_root():
-    return "Hello, this is the project mangament backend entry point"
+    return "Hello, this is the talkbook ai project backend entry point"
+
+@app.get("/health")
+def health_check():
+    return "OK"
 
 @app.post("/auth/register", response_model=UserRegisterResponse)
 async def register_user(user: NewUser):
     return await app.users.create_user(user)
 
 @app.post("/auth/login", response_model=UserLoginResponse)
-async def login_user(user: NewUser):
-    return await app.users.login_user(user)
+async def login_user(user: NewUser, response: Response):
+    login_tokens: Tokens = await app.users.login_user(user)
+    
+    response.set_cookie(
+        key="refresh_token",
+        value=login_tokens.refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=60 * 60 * 24 * 7
+    )
+    
+    return UserLoginResponse(
+        message="Logged-in successfully",
+        access_token=login_tokens.access_token
+    )
 
-@app.post("/auth/refresh-token")
-async def refresh_token(token: str):
-    return await app.users.refresh_access_token(token)
+@app.post("/auth/refresh-token", response_model=RefreshTokenResponse)
+async def refresh_token(request: Request):
+    token = request.cookies.get("refresh_token")
+    if not token:
+        raise HTTPException(status_code=401, detail="No refresh token")
+    
+    new_tokens: Tokens = await app.users.refresh_access_token(token)
+    
+    return RefreshTokenResponse(
+        new_access_token=new_tokens.access_token
+    )
 
 
 @app.get("/books", response_model=BooksResponseModel, dependencies=[Depends(get_current_user)])
