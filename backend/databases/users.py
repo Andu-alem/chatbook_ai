@@ -1,11 +1,10 @@
 from motor.motor_asyncio import AsyncIOMotorCollection
 from fastapi import HTTPException
-from pydantic import BaseModel
 from bson import ObjectId
 from utils.jwt_helpers import (
     get_password_hash, create_access_token, create_refresh_token, verify_password, decode_token
 )   
-from models import NewUser, UserModel, UserLoginResponse, UserRegisterResponse
+from models import NewUser, UserModel, UserRegisterResponse, Tokens
 
 class UserRepository:
     def __init__(self, user_collection: AsyncIOMotorCollection):
@@ -55,7 +54,6 @@ class UserRepository:
         return True
     
     async def login_user(self, user: NewUser):
-        hashed_password = get_password_hash(user.password)
         userData = await self.find_user(user.email)
 
         if not userData or not verify_password(user.password, userData.password):
@@ -87,7 +85,7 @@ class UserRepository:
                 detail="Failed to update refresh token"
             )
         # Return the access and refresh tokens
-        return UserLoginResponse(
+        return Tokens(
             access_token=access_token,
             refresh_token=refresh_token
         )
@@ -117,7 +115,7 @@ class UserRepository:
             "email": user.email
         })
 
-        return UserLoginResponse(
+        return Tokens(
             access_token=access_token,
             refresh_token=token  # Return the same refresh token
         )
