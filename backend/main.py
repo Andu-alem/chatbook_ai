@@ -44,9 +44,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserModel:
 def read_root():
     return "Hello, this is the talkbook ai project backend entry point"
 
-@app.get("/health")
+# Health Check Endpoint
+@app.head("/health")
 def health_check():
-    return "OK"
+    return {"status": "ok"}
 
 @app.post("/auth/register", response_model=UserRegisterResponse)
 async def register_user(user: NewUser):
@@ -71,17 +72,35 @@ async def login_user(user: NewUser, response: Response):
     )
 
 @app.post("/auth/refresh-token", response_model=RefreshTokenResponse)
-async def refresh_token(request: Request):
+async def refresh_token(request: Request, response: Response):
     token = request.cookies.get("refresh_token")
     if not token:
         raise HTTPException(status_code=401, detail="No refresh token")
     
     new_tokens: Tokens = await app.users.refresh_access_token(token)
     
+    response.set_cookie(
+        key="refresh_token",
+        value=new_tokens.refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=60 * 60 * 24 * 7
+    )
+    
     return RefreshTokenResponse(
-        new_access_token=new_tokens.access_token
+        access_token=new_tokens.access_token,
+        message="Token refreshed successfully"
     )
 
+@app.post("/auth/logout")
+async def logout(response: Response):
+    response.delete_cookie("refresh_token")
+    return {"message": "Logged out successfully"}
+
+@app.get("/auth/user", response_model=UserModel)
+async def get_user(current_user: UserModel = Depends(get_current_user)):
+    return current_user
 
 @app.get("/books", response_model=BooksResponseModel, dependencies=[Depends(get_current_user)])
 async def get_all_books():
