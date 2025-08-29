@@ -62,33 +62,7 @@ class UserRepository:
                 detail="Incorrect email or password"
             )
         
-        access_token = create_access_token({
-            "sub": userData.id,
-            "email": userData.email
-        })
-
-        refresh_token = create_refresh_token({
-            "sub": userData.id,
-            "email": userData.email
-        })
-        if not refresh_token or not access_token:
-            # If token creation fails, raise an error
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to create refresh token"
-            )
-
-        # Update the user's refresh token in the database
-        if not await self.update_refresh_token(userData.id, refresh_token):
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to update refresh token"
-            )
-        # Return the access and refresh tokens
-        return Tokens(
-            access_token=access_token,
-            refresh_token=refresh_token
-        )
+        return await self._create_token_and_store(userData.id, userData.email)
 
     async def refresh_access_token(self, token: str):
         # Decode the refresh token to get user information
@@ -109,13 +83,34 @@ class UserRepository:
                 detail="User not found"
             )
 
-        # Create a new access token
+        return await self._create_token_and_store(user_id, email)
+    
+    async def _create_token_and_store(self, user_id, email, session=None):
         access_token = create_access_token({
-            "sub": user.id,
-            "email": user.email
+            "sub": user_id,
+            "email": email
         })
+
+        refresh_token = create_refresh_token({
+            "sub": user_id,
+            "email": email
+        })
+
+        if not refresh_token or not access_token:
+            # If token creation fails, raise an error
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to create refresh token"
+            )
+
+        # Update the user's refresh token in the database
+        if not await self.update_refresh_token(user_id, refresh_token, session=session):
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to update refresh token"
+            )
 
         return Tokens(
             access_token=access_token,
-            refresh_token=token  # Return the same refresh token
+            refresh_token=refresh_token
         )
