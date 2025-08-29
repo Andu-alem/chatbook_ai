@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 from fastapi import HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -19,7 +18,7 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(hours=12)
+    expire = datetime.utcnow() + timedelta(minutes=30)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY)
     return encoded_jwt
