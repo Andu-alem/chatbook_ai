@@ -26,7 +26,7 @@ def store_book_meta(book_data: dict) -> ObjectId:
 
 # Full Workflow
 if __name__ == "__main__":
-    for book_data in books_data[7:]:
+    for book_data in books_data:
 
         handler = PdfHandler(book_data)
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
             batch_size = 10
             docs_length = len(documents)
-            for i in range(0, docs_length, batch_size):# start from batch 12 i=11
+            for i in range(0, docs_length, batch_size):
                 batch = documents[i:i + batch_size]
                 try:
                     vector_store.add_documents(batch)
