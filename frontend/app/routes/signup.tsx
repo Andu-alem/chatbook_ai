@@ -57,9 +57,25 @@ export async function clientAction({
                 }, { status: 400 })
             }
         }
-        const resData = await response.json()
-        console.log("the response data is", resData)
-        return { success: true }
+        
+        try {
+            // Log the user in automatically and redirect them
+            const loginResponse = await fetch("https://chatbook-ai.onrender.com/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
+            })
+            if (loginResponse.status === 200) {
+                const loginData = await loginResponse.json()
+                localStorage.setItem("access_token", loginData.access_token)
+
+                throw redirect("/books")
+            }
+        } catch {
+            throw redirect("/login")
+        }
     } catch {
         return data({
             errors: {
