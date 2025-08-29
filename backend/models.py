@@ -38,6 +38,8 @@ class BookModel(BaseModel):
     title: str
     author: str
     genere: str
+    description: str
+    cover_url: str
 
     @staticmethod
     def from_doc(doc):
@@ -45,7 +47,9 @@ class BookModel(BaseModel):
             id=str(doc["_id"]),
             title=doc["title"],
             author=doc["author"],
-            genere=doc["genere"]
+            genere=doc["genere"],
+            description=doc["description"],
+            cover_url=doc["cover_url"]
         )
 
 class BooksResponseModel(BaseModel):
