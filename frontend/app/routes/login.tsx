@@ -1,4 +1,4 @@
-import { Link, redirect, useFetcher } from "react-router"
+import { Link, redirect, useFetcher, data } from "react-router"
 import type { Route } from "./+types/login"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
@@ -17,37 +17,59 @@ export async function clientAction({
     request
 }: Route.ClientActionArgs) {
     const formData = await request.formData()
-    const email = formData.get('email')
-    const password = formData.get('password')
+    const email = String(formData.get('email')).trim()
+    const password = String(formData.get('password'))
 
-    console.log("the inputs are", { email, password });
-    const response = await fetch("https://chatbook-ai.onrender.com/auth/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-    })
-    console.log("the response status is", response.status);
-    if (response.status !== 200) {
-        if (response.status === 401) {
-            console.log("invalid credentials");
-            return { error: "Invalid credentials" };
-        } else {
-            console.log("login failed");
-            return { error: "Login failed" };
-        }
+    if (password && password.length < 8) {
+        return data({
+            errors: {
+                password: "Password should be atleast 8 characters"
+            }
+        }, { status: 400 })
     }
-    const data = await response.json();
-    console.log("the response data is", data);
-    localStorage.setItem("access_token", data.access_token)
-    // check if it is stored correctly
-    console.log("stored token is : ", localStorage.getItem("access_token"))
-    throw redirect("/books")
+    
+    try {
+        const response = await fetch("https://chatbook-ai.onrender.com/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password })
+        })
+
+        if (response.status !== 200) {
+            if (response.status === 401) {
+                return data({
+                    errors: {
+                        other: "Invalid credentials"
+                    }
+                }, { status: 500 })
+            } else {
+                return data({
+                    errors: {
+                        other: "Error has occured please try again"
+                    }
+                }, { status: 500 })
+            }
+        }
+
+        const responseData = await response.json()
+        localStorage.setItem("access_token", responseData.access_token)
+
+        throw redirect("/books")
+    } catch {
+        return data({
+            errors: {
+                other: "Error has occured check your internet connection"
+            }
+        }, { status: 500 })
+    }
 }
 
 export default function Login() {
     const fetcher = useFetcher()
+    const errors = fetcher.data?.errors
+    
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
@@ -63,6 +85,9 @@ export default function Login() {
                         <CardDescription>Sign in to your account to continue your reading journey</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        <div className="mb-2">
+                            <p className="text-red-700 text-center">{ errors?.other }</p>
+                        </div>
                         <fetcher.Form method="post" className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
@@ -77,6 +102,7 @@ export default function Login() {
                                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                     <Input id="password" type="password" name="password" placeholder="Enter your password" className="pl-10" required />
                                 </div>
+                                <p className="text-red-700">{ errors?.password }</p>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
@@ -93,7 +119,7 @@ export default function Login() {
                                     Forgot password?
                                 </Link>
                             </div>
-                            <Button type="submit" className="w-full" disabled={fetcher.state === "submitting"}>
+                            <Button type="submit" className="w-full" disabled={fetcher.state !== "idle"}>
                                 Sign In
                             </Button>
                         </fetcher.Form>
@@ -101,16 +127,16 @@ export default function Login() {
                         <div className="text-center text-sm text-muted-foreground">
                             Don't have an account?{" "}
                             <Link to="/signup" className="text-primary hover:underline font-medium">
-                                Sign up
+                                { fetcher.state === "submitting" ? "Sining up .... " : "Sign up" }
                             </Link>
                         </div>
                     </CardContent>
                 </Card>
 
                 <div className="mt-8 text-center">
-                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    ← Back to home
-                </Link>
+                    <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        ← Back to home
+                    </Link>
                 </div>
             </div>
         </div>
