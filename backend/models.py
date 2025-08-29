@@ -7,16 +7,17 @@ class NewUser(BaseModel):
     email: EmailStr
     password: str
 
-class UserModel(NewUser):
+class UserModel(BaseModel):
     id: str
+    name: Optional[str] = None
+    email: EmailStr
 
     @staticmethod
     def from_doc(doc):
         return UserModel(
             id=str(doc["_id"]),
             name=doc["name"],
-            email=doc["email"],
-            password=doc["password"]
+            email=doc["email"]
         )
 
 class UserRegisterResponse(BaseModel):
@@ -30,6 +31,8 @@ class UserLoginResponse(BaseModel):
     message: str
     access_token: str
 
+class RefreshTokenResponse(UserLoginResponse):
+    pass
 class BookModel(BaseModel):
     id: str
     title: str
@@ -51,5 +54,3 @@ class BooksResponseModel(BaseModel):
 class ChatQuery(BaseModel):
     query: str
     
-class RefreshTokenResponse(BaseModel):
-    new_access_token: str
