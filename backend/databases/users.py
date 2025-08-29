@@ -67,7 +67,7 @@ class UserRepository:
                 detail="Incorrect email or password"
             )
         
-        return await self._create_token_and_store(userData["id"], userData["email"])
+        return await self._create_token_and_store(userData["_id"], userData["email"])
 
     async def refresh_access_token(self, token: str):
         # Decode the refresh token to get user information
