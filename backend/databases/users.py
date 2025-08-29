@@ -53,16 +53,21 @@ class UserRepository:
         )
         return True
     
-    async def login_user(self, user: NewUser):
-        userData = await self.find_user(user.email)
+    async def login_user(self, user: NewUser, session=None):
+        userData = await self._user_collection.find_one(
+            { "email": user.email },
+            session=session
+        )
+        if userData is None:
+            return None
 
-        if not userData or not verify_password(user.password, userData.password):
+        if not userData or not verify_password(user.password, userData["password"]):
             raise HTTPException(
                 status_code=401,
                 detail="Incorrect email or password"
             )
         
-        return await self._create_token_and_store(userData.id, userData.email)
+        return await self._create_token_and_store(userData["id"], userData["email"])
 
     async def refresh_access_token(self, token: str):
         # Decode the refresh token to get user information
