@@ -21,7 +21,6 @@ export async function clientAction({
     const name = String(formData.get("name")).trim()
     const email = String(formData.get("email")).trim()
     const password = String(formData.get("password"))
-    console.log("the inputs are", { name, email, password })
 
     if (password && password.length < 8) {
         return data({
@@ -39,9 +38,9 @@ export async function clientAction({
             },
             body: JSON.stringify({ name, email, password })
         })
+
         if (response.status !== 200) {
             if (response.status === 400) {
-                console.log("user already exists")
                 return data({ 
                     errors: {
                         other: "User already exists" 
@@ -49,10 +48,9 @@ export async function clientAction({
                 }, { status: 400 })
 
             } else {
-                console.log("registration failed")
                 return data({
                     errors: {
-                        other: "Invalid credentials"
+                        other: "Error has occured please try again"
                     }
                 }, { status: 400 })
             }
@@ -88,6 +86,7 @@ export async function clientAction({
 export default function Signup() {
     const fetcher = useFetcher()
     const errors = fetcher.data?.errors
+    
     return (
         <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
