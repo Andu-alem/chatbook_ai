@@ -6,7 +6,7 @@ import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { BookOpen, Mail, Lock } from "lucide-react"
 
-export function clientLoader() {
+export async function clientLoader() {
     const token = localStorage.getItem("access_token")
 
     // if user is already logged in and active redirect them
@@ -16,6 +16,7 @@ export function clientLoader() {
 export async function clientAction({
     request
 }: Route.ClientActionArgs) {
+    const appURL = import.meta.env.VITE_BACKEND_URL
     const formData = await request.formData()
     const email = String(formData.get('email')).trim()
     const password = String(formData.get('password'))
@@ -29,8 +30,9 @@ export async function clientAction({
     }
     
     try {
-        const response = await fetch("https://chatbook-ai.onrender.com/auth/login", {
+        const response = await fetch(`${appURL}/auth/login`, {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -54,9 +56,9 @@ export async function clientAction({
         }
 
         const responseData = await response.json()
-        localStorage.setItem("access_token", responseData.access_token)
+        sessionStorage.setItem("access_token", responseData.access_token)
 
-        throw redirect("/books")
+        return redirect("/books")
     } catch {
         return data({
             errors: {
@@ -104,30 +106,15 @@ export default function Login() {
                                 </div>
                                 <p className="text-red-700">{ errors?.password }</p>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                    <input
-                                        id="remember"
-                                        type="checkbox"
-                                        className="h-4 w-4 rounded border-border text-primary focus:ring-ring"
-                                    />
-                                    <Label htmlFor="remember" className="text-sm text-muted-foreground">
-                                        Remember me
-                                    </Label>
-                                </div>
-                                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
-                                    Forgot password?
-                                </Link>
-                            </div>
                             <Button type="submit" className="w-full" disabled={fetcher.state !== "idle"}>
-                                Sign In
+                                { fetcher.state === "submitting" ? "Signing In .... " : "Sign In" }
                             </Button>
                         </fetcher.Form>
 
                         <div className="text-center text-sm text-muted-foreground">
                             Don't have an account?{" "}
                             <Link to="/signup" className="text-primary hover:underline font-medium">
-                                { fetcher.state === "submitting" ? "Sining up .... " : "Sign up" }
+                                Sign up
                             </Link>
                         </div>
                     </CardContent>
