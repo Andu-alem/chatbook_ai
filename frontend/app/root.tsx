@@ -23,6 +23,40 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export function HydrateFallback() {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-gray-900 dark:to-gray-950">
+      <div className="flex flex-col items-center gap-4">
+        {/* Animated Book Icon */}
+        <div className="relative">
+          <div className="h-16 w-16 rounded-xl bg-indigo-500/20 animate-ping absolute inset-0" />
+          <div className="relative flex h-16 w-16 items-center justify-center rounded-xl bg-indigo-600 text-white shadow-lg">
+            📖
+          </div>
+        </div>
+
+        {/* App Name with shimmer effect */}
+        <h1 className="text-2xl font-bold text-indigo-700 dark:text-indigo-400 animate-pulse">
+          TalkBookAI
+        </h1>
+
+        {/* Subtext */}
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Loading your AI reading experience...
+        </p>
+
+        {/* Tailwind animated dots */}
+        <div className="flex space-x-1 mt-2">
+          <span className="h-2 w-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+          <span className="h-2 w-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+          <span className="h-2 w-2 bg-indigo-500 rounded-full animate-bounce" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -46,30 +80,45 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let title = "Oops!";
+  let message = "An unexpected error occurred.";
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
+    title = error.status === 404 ? "404 Not Found" : "Error";
+    message =
       error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+        ? "The page you are looking for does not exist."
+        : error.statusText || message;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
+    message = error.message;
     stack = error.stack;
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <div className="flex h-screen w-screen flex-col items-center justify-center bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-900 dark:to-gray-950 px-4 text-center">
+      <div className="animate-pulse mb-6">
+        <span className="text-6xl md:text-8xl">⚠️</span>
+      </div>
+
+      <h1 className="text-3xl md:text-5xl font-bold text-red-700 dark:text-red-400 mb-2">
+        {title}
+      </h1>
+      <p className="text-gray-600 dark:text-gray-400 mb-6">{message}</p>
+
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="max-w-full overflow-x-auto rounded-lg bg-gray-100 dark:bg-gray-800 p-4 text-left text-sm text-gray-800 dark:text-gray-200 shadow-inner">
           <code>{stack}</code>
         </pre>
       )}
-    </main>
+
+      <a
+        href="/"
+        className="mt-8 inline-block rounded-lg bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 px-6 py-3 text-white font-semibold transition"
+      >
+        Go Home
+      </a>
+    </div>
   );
 }
+
