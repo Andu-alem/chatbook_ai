@@ -31,10 +31,10 @@ export function AppSidebar({
     return (
         <Sidebar>
             <SidebarHeader className="border-b border-sidebar-border">
-                <div className="flex items-center gap-2 px-4 py-2">
+                <Link to="/" className="flex items-center gap-2 px-4 py-2">
                     <BookOpen className="h-6 w-6 text-primary" />
                     <span className="text-lg font-serif font-bold text-sidebar-foreground">TalkBookAI</span>
-                </div>
+                </Link>
             </SidebarHeader>
 
             <SidebarContent>
@@ -99,12 +99,12 @@ export function AppSidebar({
                             >
                                 {
                                     fetcher.state === "submitting" ? (
-                                        <div>
+                                        <div className="flex items-center gap-3">
                                             <Loader2 className="size-4 mr-2" />
                                             Logging Out..
                                         </div>
                                     ) : (
-                                        <div>
+                                        <div className="flex items-center gap-3">
                                             <LogOut className="size-4 mr-2" />
                                             Sign Out
                                         </div>
