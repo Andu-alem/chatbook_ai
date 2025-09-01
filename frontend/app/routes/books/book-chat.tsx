@@ -5,10 +5,12 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "~/components/ui/avatar"
 import { Bot, Send, User } from "lucide-react"
 import { Card, CardContent } from "~/components/ui/card"
+import { SidebarTrigger } from "~/components/ui/sidebar"
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import { fetchWithAuth } from "~/utils/auth-client"
 import type { Book, History } from "~/types/types"
+import { ModeToggle } from "~/components/mode-toggle"
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (!params["book-id"]) {
@@ -115,10 +117,16 @@ export default function BookChat({
 
   return (
     <div className="p-4 h-[92vh] flex flex-col gap-4">
-      <h1 className="text-xl font-bold font-serif">
-        TalkBookAI
-        <span className="text-xs font-normal"> - Chatting with "{ loaderData.bookData?.title && "the book" }" author</span>
-      </h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="-ml-1 visible md:hidden" />
+          <h1 className="text-xl font-bold font-serif">
+            TalkBookAI
+            <span className="text-xs font-normal"> - Chatting with "{ loaderData.bookData?.title && "the book" }" author</span>
+          </h1>
+        </div>
+        <ModeToggle />
+      </div>
 
       <ScrollArea className="rounded p-2 h-3/4 space-y-2">
         <div className="space-y-4 max-w-4xl mx-auto">

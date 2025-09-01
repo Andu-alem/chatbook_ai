@@ -5,6 +5,7 @@ import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import type { Book, UserType } from "~/types/types"
 import { fetchWithAuth } from "~/utils/auth-client"
+import { ModeToggle } from "~/components/mode-toggle"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -48,7 +49,8 @@ export default function BookDetailPage({
                     <span className="text-xl sm:text-2xl font-serif font-bold text-foreground">TalkBookAI</span>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span>{ loaderData.user.name }</span>
+                    <ModeToggle />
+                    <span className="hidden sm:inline text-sm text-muted-foreground">Signed in as { loaderData.user.name }</span>
                     <fetcher.Form method="post" action="/logout">
                         <Button type="submit" variant="outline" size="sm" disabled={fetcher.state !== "idle"}>
                             {fetcher.state === "submitting" ? "Logging out..." : "Sign Out"}

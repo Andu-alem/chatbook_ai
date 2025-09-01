@@ -1,15 +1,19 @@
 import type { Route } from "./+types/home"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
-import { BookOpen, MessageSquare, Brain, Library, ArrowRight, Star, Zap } from "lucide-react"
+import { BookOpen, MessageSquare, Brain, Library, ArrowRight, Zap } from "lucide-react"
 import { Link } from "react-router"
-
+import { ModeToggle } from "~/components/mode-toggle"
 
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "TalkBookAI - Home" },
-    { name: "description", content: "Transform your reading experience with TalkBookAI. Engage in AI-powered conversations with your favorite books, get summaries, and explore your book library like never before." },
-  ];
+    {
+      name: "description",
+      content:
+        "TalkBookAI lets you chat with your books. Ask questions, get summaries, and explore your library with AI-powered conversations.",
+    },
+  ]
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
@@ -32,6 +36,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
               Login
             </Link>
+            <ModeToggle />
             <Button asChild>
               <Link to="/signup">Get Started</Link>
             </Button>
@@ -46,8 +51,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             Talk with your books like never before
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Transform your reading experience with AI-powered conversations. Ask questions, get summaries, and explore
-            your book library with intelligent assistance.
+            Ask questions, get summaries, and explore your favorite books with AI-powered conversations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button size="lg" className="text-lg px-8 py-6" asChild>
@@ -76,9 +80,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section id="features" className="py-20 px-4 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-serif font-bold text-foreground mb-4">Powerful Features for Book Lovers</h2>
+            <h2 className="text-4xl font-serif font-bold text-foreground mb-4">Features for Book Lovers</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Discover how TalkBookAI transforms your reading experience with cutting-edge AI technology.
+              Discover how TalkBookAI helps you connect with your books in new ways.
             </p>
           </div>
 
@@ -126,48 +130,16 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      {/* Social Proof Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl font-serif font-bold text-foreground mb-12">Trusted by Book Enthusiasts Worldwide</h2>
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="flex flex-col items-center">
-              <div className="text-4xl font-bold text-primary mb-2">10K+</div>
-              <div className="text-muted-foreground">Active Readers</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="text-4xl font-bold text-primary mb-2">50K+</div>
-              <div className="text-muted-foreground">Books Analyzed</div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="text-4xl font-bold text-primary mb-2">1M+</div>
-              <div className="text-muted-foreground">Questions Answered</div>
-            </div>
-          </div>
-
-          <div className="flex justify-center items-center gap-1 mb-4">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="h-6 w-6 fill-accent text-accent" />
-            ))}
-          </div>
-          <p className="text-lg text-muted-foreground">
-            "TalkBookAI has completely transformed how I engage with my reading. It's like having a personal book expert
-            available 24/7."
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">- Sarah M., Avid Reader</p>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-20 px-4 bg-primary text-primary-foreground">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-4xl font-serif font-bold mb-6">Ready to Transform Your Reading Experience?</h2>
+          <h2 className="text-4xl font-serif font-bold mb-6">Ready to Try TalkBookAI?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Join thousands of readers who are already having meaningful conversations with their books.
+            Be among the first readers to experience AI-powered book conversations.
           </p>
           <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
             <Link to="/signup">
-              Start Your Free Trial
+              Start Free
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
@@ -184,7 +156,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 <span className="text-xl font-serif font-bold">TalkBookAI</span>
               </div>
               <p className="text-muted-foreground mb-4">
-                Revolutionizing how readers interact with their favorite books through AI-powered conversations.
+                Chat with your favorite books through AI-powered conversations.
               </p>
             </div>
             <div>
@@ -193,11 +165,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 <li>
                   <Link to="#features" className="hover:text-foreground transition-colors">
                     Features
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/pricing" className="hover:text-foreground transition-colors">
-                    Pricing
                   </Link>
                 </li>
                 <li>
@@ -236,4 +203,3 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     </div>
   )
 }
-
