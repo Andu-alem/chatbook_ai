@@ -116,14 +116,14 @@ export default function BookChat({
   }
 
   return (
-    <div className="p-4 h-[92vh] flex flex-col gap-4">
+    <div className="p-1 sm:p-4 h-[100vh] flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="-ml-1 visible md:hidden" />
-          <h1 className="text-xl font-bold font-serif">
-            TalkBookAI
-            <span className="text-xs font-normal"> - Chatting with "{ loaderData.bookData?.title && "the book" }" author</span>
-          </h1>
+          <div className="flex flex-col md:flex-row gap-2 font-serif">
+            <h1 className="text-xl font-bold">TalkBookAI</h1>
+            <span className="text-xs font-normal">Chatting with "{ loaderData.bookData?.title && "the book" }" author</span>
+          </div>
         </div>
         <ModeToggle />
       </div>
@@ -194,7 +194,7 @@ export default function BookChat({
       </ScrollArea>
 
       {/* Message Input */}
-      <div className="p-4 border-t border-border bg-card">
+      <div className="p-4 border-t border-border bg-card rounded-lg">
         <div className="max-w-4xl mx-auto">
           <fetcher.Form method="post" onSubmit={handleSubmit} className="flex items-end gap-2">
             <div className="flex-1">

@@ -41,7 +41,7 @@ export default function BookDetailPage({
 }: Route.ComponentProps) {
     const fetcher = useFetcher()
     return (
-        <div className="space-y-5 relative">
+        <div className="space-y-5 relative min-h-[100vh] pb-10">
             {/* Header */}
             <div className="flex items-center justify-between top-0 sticky backdrop-blur-2xl p-3 md:px-7">
                 <div className="flex items-center justify-center gap-2">
@@ -75,7 +75,7 @@ export default function BookDetailPage({
                 <img
                     src={ loaderData.book.cover_url }
                     alt={ loaderData.book.title }
-                    className="w-full h-[55vh] sm:h-[70vh] rounded-lg border sm:flex-1"
+                    className="w-11/12 mx-auto h-[55vh] sm:h-[70vh] rounded-lg border sm:flex-1"
                 />
                 <div className="sm:flex-1 space-y-4">
                     <div className="space-y-2">
@@ -93,7 +93,7 @@ export default function BookDetailPage({
                             </div>
                         </div>
                     </div>
-                    <p>{ loaderData.book.description }</p>
+                    <p className="text-sm">{ loaderData.book.description }</p>
                     <div className="flex items-center justify-end gap-4">
                         <Button size="sm" asChild>
                             <Link to={`/books/${ loaderData.book.id }/chat`}>
