@@ -1,99 +1,89 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import type { Route } from "./+types/index"
-import { Link, redirect } from "react-router"
+import { Link, redirect, useFetcher } from "react-router"
 import { Badge } from "~/components/ui/badge"
-import { MessageSquare, User } from "lucide-react"
+import { BookOpen, MessageSquare, User } from "lucide-react"
 import { Button } from "~/components/ui/button"
+import type { Book, UserType } from "~/types/types"
+import { fetchWithAuth } from "~/utils/auth-client";
 
 export async function clientLoader() {
-    const access_token = localStorage.getItem("access_token")
-    if (!access_token) {
-        console.log("No access token found, redirecting to login")
-        throw redirect("/login")
-    }
-    try {
-        const books = await fetch("https://chatbook-ai.onrender.com/books", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                // Assuming you have a way to get the token, e.g., from localStorage
-                "Authorization": `Bearer ${localStorage.getItem("access_token")}`
-            }
-        })
-        if (books.status === 401) {
-            // Token might be expired, try to refresh
-            const refreshResponse = await fetch("https://chatbook-ai.onrender.com/auth/refresh", {
-                method: "POST",
-                credentials: "include", // Include cookies
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            if (refreshResponse.status === 200) {
-                const data = await refreshResponse.json()
-                localStorage.setItem("access_token", data.new_access_token)
-                // Retry fetching books with the new token
-                const retryBooks = await fetch("https://chatbook-ai.onrender.com/books", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${data.new_access_token}`
-                    }
-                })
-                if (retryBooks.status !== 200) {
-                    console.log("Failed to fetch books after token refresh, redirecting to login")
-                    throw redirect("/login")
-                }
-                const booksData = await retryBooks.json()
-                console.log("Fetched books data after token refresh:", booksData)
-                return booksData
-            } else {
-                // Handle refresh token failure (e.g., redirect to login)
-                console.log("Refresh token failed, redirecting to login")
-                return redirect("/login")
-            }
-        } else if (books.status !== 200) {
-            console.log("Failed to fetch books, redirecting to login")
-            throw redirect("/login")
-        }
+  try {
+    // Fetch books
+    const booksData = await fetchWithAuth("/books", { method: "GET" });
 
-        const booksData = await books.json()
-        console.log("Fetched books data:", booksData)
-        return booksData
-    } catch {
-        const bookData = {
-            id: "some id",
-            title: "The Alchemist",
-            author: "paulo coelho",
-            genere: "Phsycology",
-            description: "An easy and proven way to build good habits and break bad ones."
-        }
-        const books = [bookData, bookData, bookData, bookData, bookData, bookData]
-        return { books }
+    // Fetch user
+    const userData = await fetchWithAuth("/auth/user", { method: "GET" });
+
+    return {
+        books: booksData.books as Book[],
+        user: userData as UserType,
+    };
+  } catch (err) {
+    console.error("Error fetching books:", err);
+
+    // fallback demo books
+    const bookData = {
+      id: "some id",
+      title: "The Alchemist",
+      author: "paulo coelho",
+      genere: "Phsycology",
+      description:
+        "An easy and proven way to build good habits and break bad ones.",
+        cover_url: "htp://shldclsda.com",
+    };
+    const books = [bookData, bookData, bookData, bookData, bookData, bookData];
+    return {
+        books: books,
+        user: { name: "John Doe", email: "john@example.com"}
     }
+  }
 }
+
 
 export default function DashboardIndex({
     loaderData
 }: Route.ComponentProps) {
+    const fetcher = useFetcher()
+    const books: Book[]|[] = loaderData.books || []
+    const user: UserType = loaderData.user || { name: "John Doe", email: "john@ex.com"}
     return (
-        <div className="p-4 space-y-5">
+        <div className="space-y-5 relative">
             {/* Header */}
-            <div>
-                <h1 className="text-3xl font-serif font-bold text-foreground">TalkBookAI Library</h1>
+            <div className="flex items-center justify-between top-0 sticky backdrop-blur-2xl p-3 md:px-7">
+                <div className="flex items-center justify-center gap-2">
+                    <BookOpen className="h-8 w-8 text-primary" />
+                    <span className="text-2xl font-serif font-bold text-foreground">TalkBookAI</span>
+                </div>
+                <div className="flex items-center gap-4">
+                    <span className="capitalize">{ user.name }</span>
+                    <fetcher.Form method="post" action="/logout">
+                        <Button type="submit" variant="outline" size="sm" disabled={fetcher.state !== "idle"}>
+                            {fetcher.state === "submitting" ? "Logging out..." : "Sign Out"}
+                        </Button>
+                    </fetcher.Form>
+                </div>
+            </div>
+            
+
+            <div className="w-11/12 md:w-10/12 mx-auto">
                 <p className="text-muted-foreground">Choose your favourite book from our collection and chat with the author about the book's concept, ask questions about specific concepts, understand the book more.</p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 w-11/12 md:w-10/12 mx-auto">
                 {
-                    loaderData.books.map((book, index: number) => (
+                    books.map((book, index: number) => (
                         <Card key={index} className="hover:shadow-lg transition-shadow">
                             <CardHeader>
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Badge variant="secondary" className="text-xs">
-                                                {book.genere}
-                                            </Badge>
+                                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                                            {
+                                                book.genere.split(",").map((genere, idx) => (
+                                                    <Badge key={idx} variant="secondary" className="text-xs">
+                                                        {genere.trim()}
+                                                    </Badge>
+                                                ))
+                                            }
                                         </div>
                                         <CardTitle className="text-lg font-serif line-clamp-2">{book.title}</CardTitle>
                                             <CardDescription className="flex items-center gap-1 mt-1">
@@ -104,8 +94,14 @@ export default function DashboardIndex({
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-0">
-                                <p className="text-sm text-muted-foreground line-clamp-3 mb-4">{book.description}</p>
-                                <div className="flex items-center justify-end">
+                                <div>
+                                    <img src={book.cover_url} alt={book.title} className="w-full h-52 mb-4 rounded-md bg-muted" />
+                                </div>
+                                {book.description && <p className="text-sm text-muted-foreground line-clamp-3 mb-4">{book.description}</p>}
+                                <div className="flex items-center justify-end gap-4">
+                                  <Button variant="outline" size="sm" asChild>
+                                        <Link to={`/books/${book.id}`}>View Details</Link>
+                                    </Button>
                                     <Button size="sm" asChild>
                                         <Link to={`/books/${book.id}/chat`}>
                                             <MessageSquare className="h-3 w-3 mr-1" />
