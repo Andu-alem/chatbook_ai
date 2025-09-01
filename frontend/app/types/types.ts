@@ -11,3 +11,8 @@ export interface UserType {
     name: string
     email: string
 }
+
+export interface History {
+    role: "ai" | "human"
+    content: string
+}
