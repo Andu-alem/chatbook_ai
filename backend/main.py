@@ -7,13 +7,13 @@ from models import (
 from databases.base import lifespan
 from utils.jwt_helpers import decode_token
 from rag_pipeline_handler import llm_response, get_session_history
-
+from config import settings
 
 app = FastAPI(lifespan=lifespan, docs_url="/docs")
 
 app.add_middleware(
     middleware_class = CORSMiddleware,
-    allow_origins = ["http://localhost:5173"],
+    allow_origins = [settings.FRONTEND_URL],
     allow_credentials = True,
     allow_methods = ["*"],
     allow_headers = ["*"],
