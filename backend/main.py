@@ -6,14 +6,14 @@ from models import (
 )
 from databases.base import lifespan
 from utils.jwt_helpers import decode_token
-from rag_pipeline_handler import llm_response
+from rag_pipeline_handler import llm_response, get_session_history
 
 
 app = FastAPI(lifespan=lifespan, docs_url="/docs")
 
 app.add_middleware(
     middleware_class = CORSMiddleware,
-    allow_origins = ["*"],
+    allow_origins = ["http://localhost:5173"],
     allow_credentials = True,
     allow_methods = ["*"],
     allow_headers = ["*"],
@@ -35,6 +35,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> UserModel:
     if user is None:
         raise HTTPException(
             status_code=401,
+            
             detail="User not found",
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -62,7 +63,7 @@ async def login_user(user: NewUser, response: Response):
         value=login_tokens.refresh_token,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none", # none for prod
         max_age=60 * 60 * 24 * 7
     )
     
@@ -74,6 +75,7 @@ async def login_user(user: NewUser, response: Response):
 @app.post("/auth/refresh-token", response_model=RefreshTokenResponse)
 async def refresh_token(request: Request, response: Response):
     token = request.cookies.get("refresh_token")
+    
     if not token:
         raise HTTPException(status_code=401, detail="No refresh token")
     
@@ -83,8 +85,8 @@ async def refresh_token(request: Request, response: Response):
         key="refresh_token",
         value=new_tokens.refresh_token,
         httponly=True,
-        secure=True,
-        samesite="lax",
+        secure=True, # True for production
+        samesite="none", # none for prod
         max_age=60 * 60 * 24 * 7
     )
     
@@ -106,12 +108,16 @@ async def get_user(current_user: UserModel = Depends(get_current_user)):
 async def get_all_books():
     return await app.books.get_all_books()
 
+@app.get("/books/{book_id}", response_model=BookModel, dependencies=[Depends(get_current_user)])
+async def get_book_by_id(book_id: str):
+    return await app.books.get_book_by_id(book_id)
+
 @app.post("/books/{book_id}/chat")
 async def ai_chat_interface(
     book_id: str, 
     chat_query: ChatQuery, 
     current_user: UserModel = Depends(get_current_user)
-) -> str:
+) -> dict:
     book: BookModel = await app.books.get_book_by_id(book_id)
     if book is None:
         raise HTTPException(status_code=404, detail="No book found")
@@ -125,4 +131,18 @@ async def ai_chat_interface(
         book_title=book.title
     )
 
-    return ai_response
+    return {
+        "answer": ai_response
+    }
+
+@app.get("/books/chat-history/{book_id}")
+async def get_chat_history(book_id: str, current_user: UserModel = Depends(get_current_user)) -> dict:
+    session_id = f"{current_user.id}_{book_id}"
+    history_store = get_session_history(session_id)
+    
+    history_msgs = [
+        {"role": m.type, "content": m.content} 
+        for m in history_store.messages
+    ]
+    
+    return {"history": history_msgs}
