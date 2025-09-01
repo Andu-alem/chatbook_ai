@@ -7,48 +7,32 @@ import { Bot, Send, User } from "lucide-react"
 import { Card, CardContent } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
-import { fetchWithAuth } from "~/utils/auth-client";
+import { fetchWithAuth } from "~/utils/auth-client"
+import type { Book, History } from "~/types/types"
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   if (!params["book-id"]) {
-    return redirect("/books");
+    return redirect("/books")
   }
 
   try {
     const historyData = await fetchWithAuth(
       `/books/chat-history/${params["book-id"]}`,
       { method: "GET" }
-    );
+    )
+    
+    const bookData = await fetchWithAuth(`/books/${params["book-id"]}`, { method: "GET" })
 
-    return { history: historyData.history };
+    return {
+      history: historyData.history as History[],
+      bookData: bookData as Book
+    }
   } catch (err) {
-    console.error("Error fetching chat history:", err);
 
-    // fallback dummy history
-    const fallbackHistory = [
-      {
-        role: "human",
-        content:
-          "I'd like to discuss The Psychology of Programming. What are the main themes in this book?",
-      },
-      {
-        role: "ai",
-        content:
-          "I'd like to discuss The Psychology of Programming. What are the main themes in this book?",
-      },
-      {
-        role: "human",
-        content:
-          "I'd like to discuss The Psychology of Programming. What are the main themes in this book?",
-      },
-      {
-        role: "ai",
-        content:
-          "I'd like to discuss The Psychology of Programming. What are the main themes in this book?",
-      },
-    ];
-
-    return { history: fallbackHistory };
+    return { 
+      history: null,
+      bookData: null
+    }
   }
 }
 
@@ -84,12 +68,9 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     if (!response.ok) return null
 
     const data = await response.json()
-    return { answer: data.answer } // 👈 only keep the string
+    return { answer: data.answer }
   } catch {
-    console.log("Error occurred while sending message to book chat")
-    // return null
-    new Promise(resolve => setTimeout(resolve, 7000))
-    return { answer: "This is ai response from mock" }
+    return { answer: null }
   }
 }
 
@@ -97,12 +78,12 @@ export default function BookChat({
   loaderData,
 }: Route.ComponentProps) {
   const fetcher = useFetcher()
-  const [messages, setMessages] = useState<{ role: "human" | "ai"; content: string }[]>([])
+  const [messages, setMessages] = useState<History[]>([])
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
   // When fetcher receives new data, append assistant reply
   useEffect(() => {
     if (fetcher.data?.answer) {
@@ -134,9 +115,9 @@ export default function BookChat({
 
   return (
     <div className="p-4 h-[92vh] flex flex-col gap-4">
-      <h1 className="text-xl font-bold">
+      <h1 className="text-xl font-bold font-serif">
         TalkBookAI
-        <span className="text-xs font-normal"> - Chatting with the book author</span>
+        <span className="text-xs font-normal"> - Chatting with "{ loaderData.bookData?.title && "the book" }" author</span>
       </h1>
 
       <ScrollArea className="rounded p-2 h-3/4 space-y-2">
@@ -193,7 +174,7 @@ export default function BookChat({
                       <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.1s]" />
                       <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.2s]" />
                     </div>
-                    <span className="text-sm text-muted-foreground ml-2">AI is thinking...</span>
+                    <span className="text-sm text-muted-foreground ml-2">Thinking...</span>
                   </div>
                 </CardContent>
               </Card>
@@ -228,7 +209,7 @@ export default function BookChat({
             </Button>
           </fetcher.Form>
           <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-            <span>Consider like you are discussing with the author of "The Alchemist"</span>
+            <span>Consider like you are discussing with the author of "{ loaderData.bookData?.title && "the book" }"</span>
           </div>
         </div>
       </div>
