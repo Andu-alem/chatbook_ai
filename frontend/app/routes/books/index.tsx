@@ -1,11 +1,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import type { Route } from "./+types/index"
-import { Link, redirect, useFetcher } from "react-router"
+import { Link, useFetcher } from "react-router"
 import { Badge } from "~/components/ui/badge"
 import { BookOpen, MessageSquare, User } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import type { Book, UserType } from "~/types/types"
 import { fetchWithAuth } from "~/utils/auth-client";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "TalkBookAI - Chat with your favourite book" },
+    { name: "description", content: "Choose your favourite book from our collection and chat with the author about the book's concept, ask questions about specific concepts, understand the book more." },
+  ];
+}
 
 export async function clientLoader() {
   try {

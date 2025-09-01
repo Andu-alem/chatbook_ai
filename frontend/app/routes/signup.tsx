@@ -6,6 +6,12 @@ import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { BookOpen, Mail, Lock, User } from "lucide-react"
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "TalkBookAI - Signup" },
+    { name: "description", content: "Create an account on TalkBookAI to start your AI-powered reading journey and chat with your favourite books." },
+  ]
+}
 
 export function clientLoader() {
     const token = sessionStorage.getItem("access_token")

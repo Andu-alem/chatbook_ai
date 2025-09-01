@@ -7,13 +7,9 @@ import { Link } from "react-router"
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "TalkBookAI - Home" },
+    { name: "description", content: "Transform your reading experience with TalkBookAI. Engage in AI-powered conversations with your favorite books, get summaries, and explore your book library like never before." },
   ];
-}
-
-export function clientLoader(){
-  return { name: "andi"}
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
@@ -24,7 +20,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-serif font-bold text-foreground">TalkBookAI { loaderData.name }</span>
+            <span className="text-2xl font-serif font-bold text-foreground">TalkBookAI</span>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="#features" className="text-muted-foreground hover:text-foreground transition-colors">

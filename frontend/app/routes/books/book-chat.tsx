@@ -55,16 +55,17 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
   const formData = await request.formData()
   const message = String(formData.get("message")).trim()
   if (!message) return null
 
-  const access_token = localStorage.getItem("access_token")
+  const access_token = sessionStorage.getItem("access_token")
   // if (!access_token) return redirect("/login")
 
   try {
     const response = await fetch(
-      `http://127.0.0.1:8000/books/${params["book-id"]}/chat`,
+      `${backendUrl}/books/${params["book-id"]}/chat`,
       {
         method: "POST",
         headers: {
@@ -76,7 +77,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     )
 
     if (response.status === 401) {
-      localStorage.removeItem("access_token")
+      sessionStorage.removeItem("access_token")
       return redirect("/login")
     }
 
