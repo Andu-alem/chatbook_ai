@@ -56,13 +56,13 @@ export default function DashboardIndex({
     const books: Book[]|[] = loaderData.books || []
     const user: UserType = loaderData.user || { name: "John Doe", email: "john@ex.com"}
     return (
-        <div className="space-y-5 relative">
+        <div className="space-y-5 relative bg-background pb-10">
             {/* Header */}
             <div className="flex items-center justify-between top-0 sticky backdrop-blur-2xl p-3 md:px-7">
-                <div className="flex items-center justify-center gap-2">
+                <Link to="/" className="flex items-center justify-center gap-2">
                     <BookOpen className="h-8 w-8 text-primary" />
                     <span className="text-2xl font-serif font-bold text-foreground">TalkBookAI</span>
-                </div>
+                </Link>
                 <div className="flex items-center gap-4">
                     <ModeToggle />
                     <span className="hidden sm:inline text-sm text-muted-foreground">Signed in as { user.name }</span>

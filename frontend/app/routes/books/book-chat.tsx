@@ -116,11 +116,11 @@ export default function BookChat({
   }
 
   return (
-    <div className="p-1 sm:p-4 h-[100vh] flex flex-col gap-4">
+    <div className="p-1 sm:p-4 min-h-[92vh] flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="-ml-1 visible md:hidden" />
-          <div className="flex flex-col md:flex-row gap-2 font-serif">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 font-serif">
             <h1 className="text-xl font-bold">TalkBookAI</h1>
             <span className="text-xs font-normal">Chatting with "{ loaderData.bookData?.title && "the book" }" author</span>
           </div>

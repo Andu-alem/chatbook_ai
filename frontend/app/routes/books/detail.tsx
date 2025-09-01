@@ -41,13 +41,13 @@ export default function BookDetailPage({
 }: Route.ComponentProps) {
     const fetcher = useFetcher()
     return (
-        <div className="space-y-5 relative min-h-[100vh] pb-10">
+        <div className="space-y-5 relative min-h-[100vh] pb-10 bg-background">
             {/* Header */}
             <div className="flex items-center justify-between top-0 sticky backdrop-blur-2xl p-3 md:px-7">
-                <div className="flex items-center justify-center gap-2">
+                <Link to="/" className="flex items-center justify-center gap-2">
                     <BookOpen className="size-7 sm:size-8 text-primary" />
                     <span className="text-xl sm:text-2xl font-serif font-bold text-foreground">TalkBookAI</span>
-                </div>
+                </Link>
                 <div className="flex items-center gap-4">
                     <ModeToggle />
                     <span className="hidden sm:inline text-sm text-muted-foreground">Signed in as { loaderData.user.name }</span>
