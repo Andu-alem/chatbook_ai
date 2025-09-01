@@ -8,7 +8,7 @@ import { BookOpen, Mail, Lock, User } from "lucide-react"
 
 
 export function clientLoader() {
-    const token = localStorage.getItem("access_token")
+    const token = sessionStorage.getItem("access_token")
 
     // if user is already logged in and active redirect them
     if (token && token !== "") throw redirect("/books")
@@ -17,6 +17,7 @@ export function clientLoader() {
 export async function clientAction({
     request
 }: Route.ClientActionArgs) {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
     const formData = await request.formData()
     const name = String(formData.get("name")).trim()
     const email = String(formData.get("email")).trim()
@@ -31,7 +32,7 @@ export async function clientAction({
     }
 
     try {
-        const response = await fetch("https://chatbook-ai.onrender.com/auth/register", {
+        const response = await fetch(`${backendUrl}/auth/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -58,7 +59,7 @@ export async function clientAction({
         
         try {
             // Log the user in automatically and redirect them
-            const loginResponse = await fetch("https://chatbook-ai.onrender.com/auth/login", {
+            const loginResponse = await fetch(`${backendUrl}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -67,7 +68,7 @@ export async function clientAction({
             })
             if (loginResponse.status === 200) {
                 const loginData = await loginResponse.json()
-                localStorage.setItem("access_token", loginData.access_token)
+                sessionStorage.setItem("access_token", loginData.access_token)
 
                 throw redirect("/books")
             }
