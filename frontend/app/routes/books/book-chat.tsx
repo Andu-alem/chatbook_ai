@@ -129,7 +129,7 @@ export default function BookChat({
           <ModeToggle />
         </div>
 
-        <ScrollArea className="flex-1 border border-border rounded-lg">
+        <ScrollArea className="h-3/4 border border-border rounded-lg">
           <div className="space-y-4 max-w-4xl mx-auto">
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-3 ${msg.role === "human" ? "justify-end" : "justify-start"}`}>
