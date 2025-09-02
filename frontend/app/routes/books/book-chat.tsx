@@ -116,8 +116,8 @@ export default function BookChat({
   }
 
   return (
-    <div className="p-1 sm:p-4 h-[100vh]">
-      <div className="flex flex-col h-[95vh] max-w-4xl mx-auto">
+    <div className="p-1 sm:p-4 min-h-[100vh]">
+      <div className="flex flex-col h-[93vh] max-w-4xl mx-auto gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1 visible md:hidden" />
@@ -129,7 +129,7 @@ export default function BookChat({
           <ModeToggle />
         </div>
 
-        <ScrollArea className="h-3/4 border border-border rounded-lg">
+        <ScrollArea className="h-3/4 border border-border rounded-lg p-1 sm:p-3">
           <div className="space-y-4 max-w-4xl mx-auto">
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-3 ${msg.role === "human" ? "justify-end" : "justify-start"}`}>
