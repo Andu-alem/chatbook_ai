@@ -109,7 +109,6 @@ export default function BookChat({
     // Add user message immediately
     setMessages((prev) => [...prev, { role: "human", content: userMessage }])
 
-    // Let fetcher handle sending
     fetcher.submit(form)
 
     input.value = "" // clear input
@@ -117,7 +116,7 @@ export default function BookChat({
 
   return (
     <div className="p-1 sm:p-4 min-h-[100vh]">
-      <div className="flex flex-col h-[93vh] max-w-4xl mx-auto gap-4">
+      <div className="flex flex-col h-[90vh] max-w-4xl mx-auto gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1 visible md:hidden" />
