@@ -68,7 +68,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           {/* Hero Image Placeholder */}
           <div className="relative max-w-4xl mx-auto">
             <img
-              src="/modern-chat-interface-with-books-and-ai-assistant.png"
+              src="/talkbook-image.png"
               alt="TalkBookAI Interface Preview"
               className="rounded-lg shadow-2xl border border-border"
             />
@@ -149,7 +149,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       {/* Footer */}
       <footer className="py-12 px-4 border-t border-border">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-10">
             <div className="col-span-2">
               <div className="flex items-center gap-2 mb-4">
                 <BookOpen className="h-6 w-6 text-primary" />
@@ -174,29 +174,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 </li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <Link to="/privacy" className="hover:text-foreground transition-colors">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/terms" className="hover:text-foreground transition-colors">
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="hover:text-foreground transition-colors">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
           </div>
           <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 TalkBookAI. All rights reserved.</p>
+            <p>&copy; { new Date().getFullYear() } TalkBookAI. All rights reserved.</p>
           </div>
         </div>
       </footer>
