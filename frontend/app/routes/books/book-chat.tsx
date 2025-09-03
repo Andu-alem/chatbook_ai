@@ -115,110 +115,108 @@ export default function BookChat({
   }
 
   return (
-    <div className="p-1 sm:p-4 min-h-[100vh]">
-      <div className="flex flex-col h-[90vh] max-w-4xl mx-auto gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="-ml-1 visible md:hidden" />
-            <div className="flex flex-col md:flex-row md:items-center gap-2 font-serif">
-              <h1 className="text-xl font-bold">TalkBookAI</h1>
-              <span className="text-xs font-normal">Chatting with "{ loaderData.bookData?.title && "the book" }" author</span>
-            </div>
+    <div className="h-screen flex flex-col gap-4 p-2 sm:p-4">
+      <div className="flex items-center justify-between p-2 pb-0">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="-ml-1 visible md:hidden" />
+          <div className="flex flex-col md:flex-row md:items-center gap-2 font-serif">
+            <h1 className="text-xl font-bold">TalkBookAI</h1>
+            <span className="text-xs font-normal">Chatting with "{ loaderData.bookData?.title || "the book" }" author</span>
           </div>
-          <ModeToggle />
         </div>
+        <ModeToggle />
+      </div>
 
-        <ScrollArea className="h-3/4 border border-border rounded-lg p-1 sm:p-3">
-          <div className="space-y-4 max-w-4xl mx-auto">
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex gap-3 ${msg.role === "human" ? "justify-end" : "justify-start"}`}>
-                {msg.role === "ai" && (
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="bg-primary text-primary-foreground">
-                      <Bot className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-
-                <div
-                  className={`max-w-[70%] ${msg.role === "ai" ? "items-end" : "items-start"}`}
-                >
-                  <Card
-                      className={`${
-                        msg.role === "ai"
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-card border-border hover:bg-muted/50"
-                      } transition-colors p-0`}
-                    >
-                      <CardContent className="px-3 py-4">
-                        <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
-                      </CardContent>
-                    </Card>
-                </div>
-
-                {msg.role === "human" && (
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="bg-secondary text-secondary-foreground">
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-              </div>
-            ))}
-
-            {/* Typing Indicator */}
-            {fetcher.state === "submitting" && (
-              <div className="flex gap-3 justify-start">
+      <ScrollArea className="border rounded-lg h-[61%] md:h-[65%] p-4">
+        <div className="space-y-4 max-w-4xl mx-auto">
+          {messages.map((msg, i) => (
+            <div key={i} className={`flex gap-3 ${msg.role === "human" ? "justify-end" : "justify-start"}`}>
+              {msg.role === "ai" && (
                 <Avatar className="h-8 w-8 mt-1">
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     <Bot className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
-                <Card className="bg-card border-border">
-                  <CardContent className="p-3">
-                    <div className="flex items-center gap-1">
-                      <div className="flex gap-1">
-                        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
-                        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.1s]" />
-                        <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.2s]" />
-                      </div>
-                      <span className="text-sm text-muted-foreground ml-2">Thinking...</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+              )}
 
-            <div ref={bottomRef} />
-          </div>
-        </ScrollArea>
-
-        {/* Message Input */}
-        <div className="p-2 border-t border-border bg-card rounded-lg">
-          <div className="max-w-4xl mx-auto">
-            <fetcher.Form method="post" onSubmit={handleSubmit} className="flex items-end gap-2">
-              <div className="flex-1">
-                <Textarea
-                  // onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  className="flex-1 resize-none"
-                  name="message"
-                  disabled={fetcher.state === "submitting"}
-                  maxLength={250}
-                />
-              </div>
-              <Button
-                type="submit"
-                disabled={fetcher.state === "submitting"}
-                size="sm"
-                className="h-[44px]"
+              <div
+                className={`max-w-[70%] ${msg.role === "ai" ? "items-end" : "items-start"}`}
               >
-                <Send className="h-4 w-4" />
-              </Button>
-            </fetcher.Form>
-            <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-              <span>Consider like you are discussing with the author of "{ loaderData.bookData?.title && "the book" }"</span>
+                <Card
+                    className={`${
+                      msg.role === "ai"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card border-border hover:bg-muted/50"
+                    } transition-colors p-0`}
+                  >
+                    <CardContent className="px-3 py-4">
+                      <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+                    </CardContent>
+                  </Card>
+              </div>
+
+              {msg.role === "human" && (
+                <Avatar className="h-8 w-8 mt-1">
+                  <AvatarFallback className="bg-secondary text-secondary-foreground">
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              )}
             </div>
+          ))}
+
+          {/* Typing Indicator */}
+          {fetcher.state === "submitting" && (
+            <div className="flex gap-3 justify-start">
+              <Avatar className="h-8 w-8 mt-1">
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  <Bot className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
+              <Card className="bg-card border-border">
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-1">
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" />
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.1s]" />
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce [animation-delay:0.2s]" />
+                    </div>
+                    <span className="text-sm text-muted-foreground ml-2">Thinking...</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          <div ref={bottomRef} />
+        </div>
+      </ScrollArea>
+
+      {/* Message Input */}
+      <div className="p-2 border-t border-border bg-card rounded-lg">
+        <div className="max-w-4xl mx-auto">
+          <fetcher.Form method="post" onSubmit={handleSubmit} className="flex items-end gap-2">
+            <div className="flex-1">
+              <Textarea
+                // onKeyPress={handleKeyPress}
+                placeholder="Type your message..."
+                className="flex-1 resize-none"
+                name="message"
+                disabled={fetcher.state === "submitting"}
+                maxLength={250}
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={fetcher.state === "submitting"}
+              size="sm"
+              className="h-[44px]"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </fetcher.Form>
+          <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+            <span>Consider like you are discussing with the author of "{ loaderData.bookData?.title || "the book" }"</span>
           </div>
         </div>
       </div>
