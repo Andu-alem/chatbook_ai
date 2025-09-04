@@ -115,6 +115,12 @@ The script:
 
 ---
 
+## Screenshot
+
+![Talkbook Screenshot](frontend/public/talkbookai.png)
+
+---
+
 ## 📈 Roadmap
 
 - [ ] Chapter-specific context retrieval
@@ -122,17 +128,6 @@ The script:
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome!
-
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit with clear messages
-4. Open a Pull Request
-
----
-
 ## 📄 License
 
-MIT License – see the [LICENSE](LICENSE) file for details.
+MIT License
