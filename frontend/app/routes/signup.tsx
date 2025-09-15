@@ -76,10 +76,10 @@ export async function clientAction({
                 const loginData = await loginResponse.json()
                 sessionStorage.setItem("access_token", loginData.access_token)
 
-                throw redirect("/books")
+                return redirect("/books")
             }
         } catch {
-            throw redirect("/login")
+            return redirect("/login")
         }
     } catch {
         return data({
