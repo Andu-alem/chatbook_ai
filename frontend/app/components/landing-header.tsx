@@ -11,15 +11,15 @@ export function Header() {
                     <BookOpen className="h-8 w-8 text-primary" />
                     <span className="text-2xl font-serif font-bold text-foreground">TalkBookAI</span>
                 </div>
-                <nav className="hidden md:flex items-center gap-6">
-                    <Link to="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+                <nav className="flex items-center gap-6">
+                    <Link to="#features" className="hidden md:block text-muted-foreground hover:text-foreground transition-colors">
                         Features
                     </Link>
-                    <Link to="/login" className="text-muted-foreground hover:text-foreground transition-colors">
+                    <Link to="/login" className="hidden md:block text-muted-foreground hover:text-foreground transition-colors">
                         Login
                     </Link>
                     <ModeToggle />
-                    <Button asChild>
+                    <Button className="hidden md:block" asChild>
                         <Link to="/signup">Get Started</Link>
                     </Button>
                 </nav>
